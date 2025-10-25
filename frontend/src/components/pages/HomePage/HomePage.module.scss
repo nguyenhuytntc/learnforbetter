@@ -1,0 +1,20 @@
+.wrapper {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.list-quotes {
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+}
+
+.quote {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
