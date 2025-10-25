@@ -31,6 +31,14 @@ function Navbar() {
                                 Code Chill
                             </Link>
                         </li>
+                        <li className={cx("menu-item")}>
+                            <Link
+                                to="/create-quote"
+                                className={cx("menu-link")}
+                            >
+                                Create Quote
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </div>

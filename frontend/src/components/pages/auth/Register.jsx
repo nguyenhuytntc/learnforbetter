@@ -1,16 +1,17 @@
 import classNames from "classnames/bind";
 
 import styles from "./Auth.module.scss";
-import { Link } from "react-router-dom";
-import { useRegisterMutation } from "@services/rootApi";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useGetAuthUserQuery, useRegisterMutation } from "@services/rootApi";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "@redux/slices/authSlice";
 
 const cx = classNames.bind(styles);
 
 function Register() {
-    const [register, { isLoading }] = useRegisterMutation();
+    const navigate = useNavigate();
+    const [register] = useRegisterMutation();
     const dispatch = useDispatch();
     const [inputs, setInputs] = useState({
         name: "",
@@ -18,15 +19,29 @@ function Register() {
         password: "",
     });
 
+    const token =
+        useSelector((state) => state.auth.userInfo?.token) ||
+        localStorage.getItem("token");
+
+    useEffect(() => {
+        if (token) {
+            navigate("/");
+        }
+    }, [token]);
+
     const handleInputChange = (e) => {
         setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
             const res = await register(inputs).unwrap();
-
+            if (res.user.token) {
+                localStorage.setItem("token", res.user.token);
+                navigate("/");
+            }
             dispatch(login(res.user));
         } catch (error) {
             console.error(error);

@@ -26,4 +26,6 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
+
+    public function getUser() {}
 }
