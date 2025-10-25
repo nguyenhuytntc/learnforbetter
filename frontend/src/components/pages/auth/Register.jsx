@@ -4,11 +4,14 @@ import styles from "./Auth.module.scss";
 import { Link } from "react-router-dom";
 import { useRegisterMutation } from "@services/rootApi";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "@redux/slices/authSlice";
 
 const cx = classNames.bind(styles);
 
 function Register() {
     const [register, { isLoading }] = useRegisterMutation();
+    const dispatch = useDispatch();
     const [inputs, setInputs] = useState({
         name: "",
         email: "",
@@ -21,7 +24,13 @@ function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await register(inputs);
+        try {
+            const res = await register(inputs).unwrap();
+
+            dispatch(login(res.user));
+        } catch (error) {
+            console.error(error);
+        }
     };
     return (
         <div className={cx("wrapper")}>
