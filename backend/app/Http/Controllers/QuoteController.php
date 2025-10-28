@@ -12,7 +12,14 @@ class QuoteController extends Controller
      */
     public function index()
     {
-        return response()->json(['quotes' => Quote::all()]);
+        $quote = Quote::paginate(2);
+        return response()->json([
+            'quotes' => $quote->items(),
+            'current_page' => $quote->currentPage(),
+            'per_page' => $quote->perPage(),
+            'total' => $quote->total(),
+            'last_page' => $quote->lastPage(),
+        ]);
     }
 
     /**

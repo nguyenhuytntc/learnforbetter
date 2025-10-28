@@ -41,17 +41,7 @@ function CreateQuote() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("form")}>
-                <Editor
-                    ref={quillRef}
-                    defaultValue={new Delta()
-                        .insert("Hello")
-                        .insert("\n", { header: 1 })
-                        .insert("Some ")
-                        .insert("initial", { bold: true })
-                        .insert(" ")
-                        .insert("content", { underline: true })
-                        .insert("\n")}
-                />
+                <Editor ref={quillRef} />
                 {error && <p className="form-error">{error}</p>}
                 <button className={cx("btn-submit")} onClick={handleSubmit}>
                     Submit

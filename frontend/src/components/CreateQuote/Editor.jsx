@@ -1,3 +1,4 @@
+import { useUploadImageMutation } from "@services/uploadApi";
 import Quill from "quill";
 import React, { forwardRef, useEffect, useRef } from "react";
 
@@ -5,6 +6,7 @@ import React, { forwardRef, useEffect, useRef } from "react";
 const Editor = forwardRef(({ defaultValue }, ref) => {
     const containerRef = useRef(null);
     const defaultValueRef = useRef(defaultValue);
+    const [uploadImage] = useUploadImageMutation();
 
     useEffect(() => {
         const container = containerRef.current;
@@ -14,11 +16,46 @@ const Editor = forwardRef(({ defaultValue }, ref) => {
         const quill = new Quill(editorContainer, {
             theme: "snow",
             modules: {
-                toolbar: [
-                    ["bold", "italic"],
-                    ["link", "image"],
-                ],
+                toolbar: {
+                    container: [
+                        ["bold", "italic"],
+                        ["link", "image"],
+                    ],
+                    handlers: {
+                        image: function () {
+                            const input = document.createElement("input");
+                            input.setAttribute("type", "file");
+                            input.setAttribute("accept", "image/*");
+                            input.click();
+
+                            input.onchange = async () => {
+                                const file = input.files[0];
+                                const formData = new FormData();
+                                formData.append("image", file);
+
+                                try {
+                                    const res = await uploadImage(
+                                        formData
+                                    ).unwrap();
+
+                                    const imageUrl = res.url;
+
+                                    const range = quill.getSelection();
+                                    quill.insertEmbed(
+                                        range.index,
+                                        "image",
+                                        imageUrl
+                                    );
+                                } catch (err) {
+                                    console.error("Upload failed", err);
+                                }
+                            };
+                        },
+                    },
+                },
             },
+
+            placeholder: "Write something ...",
         });
 
         ref.current = quill;
@@ -27,9 +64,9 @@ const Editor = forwardRef(({ defaultValue }, ref) => {
             quill.setContents(defaultValueRef.current);
         }
 
-        quill.on(Quill.events.TEXT_CHANGE);
+        quill.on(Quill.events.TEXT_CHANGE, () => {});
 
-        quill.on(Quill.events.SELECTION_CHANGE);
+        quill.on(Quill.events.SELECTION_CHANGE, () => {});
 
         return () => {
             ref.current = null;

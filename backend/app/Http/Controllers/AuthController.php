@@ -21,7 +21,7 @@ class AuthController extends Controller
             'password' => $request->password,
         ]);
         if ($user) {
-            $token = $user->createToken('token')->accessToken;
+            $token = $user->createToken('accessToken')->accessToken;
         }
 
         return response()->json([
@@ -42,7 +42,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Login successful',
                 'user' => $user,
-                'token' => $token
+                'accessToken' => $token
             ]);
         } else {
             // Login failed

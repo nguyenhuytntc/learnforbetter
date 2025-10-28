@@ -24,7 +24,7 @@ function Register() {
         password: [],
     });
 
-    const user = useSelector((state) => state.auth.user);
+    const user = useSelector((state) => state.auth.userInfo);
 
     useEffect(() => {
         if (user) {
