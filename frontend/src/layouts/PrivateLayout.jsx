@@ -1,24 +1,19 @@
 import Navbar from "@components/Navbar";
-import { logout, saveUserInfo } from "@redux/slices/authSlice";
-import { useGetAuthUserQuery } from "@services/rootApi";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+
 import { Outlet, useNavigate } from "react-router-dom";
 
 function PrivateLayout() {
-    const response = useGetAuthUserQuery();
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const user = useSelector((state) => state.auth.userInfo);
+
     useEffect(() => {
-        console.log(response.data);
-        if (response) {
-            // dispatch(saveUserInfo(data));
-        } else {
-            // localStorage.removeItem("token");
-            // dispatch(logout());
+        if (!user) {
             navigate("/login");
         }
-    }, [response]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
     return (
         <div>
             <Navbar />

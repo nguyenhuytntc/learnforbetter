@@ -4,14 +4,17 @@ import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import GlobalStyles from "@components/GlobalStyles";
 import { Provider } from "react-redux";
-import store from "@redux/store";
+import store, { persistor } from "@redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <GlobalStyles>
-            <Provider store={store}>
-                <RouterProvider router={router} />
-            </Provider>
+            <PersistGate persistor={persistor}>
+                <Provider store={store}>
+                    <RouterProvider router={router} />
+                </Provider>
+            </PersistGate>
         </GlobalStyles>
     </StrictMode>
 );

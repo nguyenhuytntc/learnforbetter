@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class AuthController extends Controller
@@ -18,13 +21,35 @@ class AuthController extends Controller
             'password' => $request->password,
         ]);
         if ($user) {
-            $user->token = $user->createToken('token')->accessToken;
+            $token = $user->createToken('token')->accessToken;
         }
 
         return response()->json([
             'message' => 'Create user successfully.',
-            'user' => $user
+            'user' => $user,
+            'token' => $token
         ]);
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Login successful
+            $user = Auth::user();
+            $token = $user->createToken('token')->accessToken;
+            return response()->json([
+                'message' => 'Login successful',
+                'user' => $user,
+                'token' => $token
+            ]);
+        } else {
+            // Login failed
+            return response()->json([
+                'message' => 'Invalid email or password!'
+            ], 401);
+        }
     }
 
     public function getUser() {}

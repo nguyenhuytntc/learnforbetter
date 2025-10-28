@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 
 import styles from "./Auth.module.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { useGetAuthUserQuery, useRegisterMutation } from "@services/rootApi";
+import { useRegisterMutation } from "@services/rootApi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "@redux/slices/authSlice";
@@ -18,16 +18,20 @@ function Register() {
         email: "",
         password: "",
     });
+    const [errors, setErrors] = useState({
+        name: [],
+        email: [],
+        password: [],
+    });
 
-    const token =
-        useSelector((state) => state.auth.userInfo?.token) ||
-        localStorage.getItem("token");
+    const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
-        if (token) {
+        if (user) {
             navigate("/");
         }
-    }, [token]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     const handleInputChange = (e) => {
         setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -38,13 +42,15 @@ function Register() {
 
         try {
             const res = await register(inputs).unwrap();
-            if (res.user.token) {
-                localStorage.setItem("token", res.user.token);
-                navigate("/");
+
+            if (res.user) {
+                dispatch(
+                    login({ user: res.user, accessToken: res.accessToken })
+                );
+                navigate("/create-quote");
             }
-            dispatch(login(res.user));
         } catch (error) {
-            console.error(error);
+            setErrors(error.data.errors);
         }
     };
     return (
@@ -63,6 +69,15 @@ function Register() {
                         onChange={handleInputChange}
                         value={inputs.name}
                     />
+                    {errors?.name?.length > 0 && (
+                        <ul>
+                            {errors.name.map((error, index) => (
+                                <li className={cx("form-error")} key={index}>
+                                    {error}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                     <label className={cx("form-label")} htmlFor="email">
                         Email:
                     </label>
@@ -74,6 +89,15 @@ function Register() {
                         onChange={handleInputChange}
                         value={inputs.email}
                     />
+                    {errors?.email?.length > 0 && (
+                        <ul>
+                            {errors.email.map((error, index) => (
+                                <li className={cx("form-error")} key={index}>
+                                    {error}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                     <label className={cx("form-label")} htmlFor="password">
                         Password:
                     </label>
@@ -85,6 +109,15 @@ function Register() {
                         onChange={handleInputChange}
                         value={inputs.password}
                     />
+                    {errors?.password?.length > 0 && (
+                        <ul>
+                            {errors.password.map((error, index) => (
+                                <li className={cx("form-error")} key={index}>
+                                    {error}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                     <button className={cx("form-btn")} type="submit">
                         Submit
                     </button>

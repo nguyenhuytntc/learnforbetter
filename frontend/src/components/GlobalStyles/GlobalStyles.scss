@@ -25,3 +25,11 @@ a {
 input {
     outline: none;
 }
+
+.form-error {
+    list-style: circle;
+    color: red;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    margin-left: 25px;
+}
